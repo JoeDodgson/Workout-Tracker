@@ -1,16 +1,14 @@
 // Require in dependencies
-const fs = require("fs");
+// const fs = require("fs");
 const path = require("path");
 
 // Require in local modules
-const db = require('/models');
-
+// const db = require('./models/workoutModel.js');
 
 // Define paths
-const exerciseHTMLPath = path.join(__dirname, "/exercise.html");
-const indexHTMLPath = path.join(__dirname, "/index.html");
-const statsHTMLPath = path.join(__dirname, "/stats.html");
-
+const indexHTMLPath = path.join(__dirname, "../public/index.html");
+const exerciseHTMLPath = path.join(__dirname, "../public/exercise.html");
+const statsHTMLPath = path.join(__dirname, "../public/stats.html");
 
 module.exports = (app) => {
     // Root page

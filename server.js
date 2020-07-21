@@ -4,7 +4,7 @@ const logger = require("morgan");
 const mongoose = require("mongoose");
 
 // Require in local modules
-const Models = require("/models/index.js");
+const Models = require("./models/workoutModel.js");
 
 // Define DB connection details
 const PORT = process.env.PORT || 3000;
@@ -23,7 +23,7 @@ mongoose.connect(process.env.MONGODB_URI || "mongodb://localhost/userdb", { useN
 
 // Require in routes
 require('./routes/html-routes.js')(app);
-require('./routes/api-routes.js')(app);
+// require('./routes/api-routes.js')(app);
 
 // Start the application server listening 
 app.listen(PORT, () => {
