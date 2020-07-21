@@ -1,15 +1,17 @@
 // Require in node modules
 const express = require("express");
+const logger = require("morgan");
 const mongoose = require("mongoose");
 
 // Require in local modules
-const User = require("/models/index.js");
+const Models = require("/models/index.js");
 
 // Define DB connection details
 const PORT = process.env.PORT || 3000;
 
 // Set up the express server and middleware
 const app = express();
+app.use(logger("dev"));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
