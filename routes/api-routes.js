@@ -7,33 +7,31 @@ module.exports = (app) => {
         try {
             // Perform a find all query on the database
             const workouts = await db.Workout.find({});
-
+            
             // If no workouts are returned, throw a 404 error
             if (workouts.length === 0) throw new Error('404: No workouts found');
-
+            
             // Return the workouts to the user
             return res.json(workouts);
         } catch (err) {
             console.error(`ERROR - api-routes.js - .get('/api/workouts'): ${err}`);
         }
     });
-
+    
     app.put('/api/workouts/:id', async (req, res) => {
         try {
             // Store the data sent in the request
-            const { id } = req.query;
+            const { id } = req.params;
             const { type } = req.body;
+
+            // Use the id query the database for the existing workout. Store the exercises
+            const currentWorkout = await db.Workout.find({ _id: id });
+            const { exercises } = currentWorkout[0];
             
-            // Create a new workout document using the mongoose model
-            const newWorkout = new db.Workout({
-                day: new Date(),
-                exercises: []
-            });
-            
-            // Store the data sent in the request body and feed into the newWorkout
+            // Store the data sent in the request body and add to exercises
             if (type === "resistance") {
                 const { name, duration, weight, reps, sets } = req.body;
-                newWorkout.exercises.push({
+                exercises.push({
                         _id: id,
                         type,
                         name,
@@ -44,7 +42,7 @@ module.exports = (app) => {
                 });
             } else if (type === "cardio") {
                 const { name, distance, duration } = req.body;
-                newWorkout.exercises.push({
+                exercises.push({
                         _id: id,
                         type,
                         name,
@@ -54,13 +52,13 @@ module.exports = (app) => {
             }
 
             // Save the new workout to the database
-            const addedWorkout = await newWorkout.save();
+            const updatedWorkout = await db.Workout.updateOne({ _id: id }, { exercises });
 
-            // If no workout added, throw a  error
-            if (!addedWorkout) throw new Error('501: Workout not added');
+            // If no updated workout is returned, throw a 501 error
+            if (!updatedWorkout) throw new Error('501: Workout not updated');
  
             // Return the workouts to the user
-            return res.json(addedWorkout);
+            return res.json(updatedWorkout);
 
         } catch (err) {
             console.error(`ERROR - api-routes.js - .put('/api/workouts/:id'): ${err}`);
