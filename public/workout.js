@@ -20,16 +20,23 @@ async function initWorkout() {
 }
 
 function tallyExercises(exercises) {
+  // Sum the duration, weight, reps, sets, distance of all exercises in workout
   const tallied = exercises.reduce((acc, curr) => {
+    acc.totalDuration = (acc.totalDuration || 0) + curr.duration;
     if (curr.type === "resistance") {
       acc.totalWeight = (acc.totalWeight || 0) + curr.weight;
       acc.totalSets = (acc.totalSets || 0) + curr.sets;
-      acc.totalReps = (acc.totalReps || 0) + curr.reps;
+      acc.totalReps = (acc.totalReps || 0) + curr.reps * curr.sets;
     } else if (curr.type === "cardio") {
       acc.totalDistance = (acc.totalDistance || 0) + curr.distance;
     }
     return acc;
   }, {});
+
+  // Suffix the totals with units
+  if (tallied.totalDuration) tallied.totalDuration += " mins";
+  if (tallied.totalWeight) tallied.totalWeight += " lbs";
+  if (tallied.totalDistance) tallied.totalDistance += " mi";
   return tallied;
 }
 
