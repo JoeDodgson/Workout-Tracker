@@ -14,9 +14,10 @@ const API = {
     }
   },
   async addExercise(data) {
+    // Store the workout ID from the URL
     const id = location.search.split("=")[1];
     try {
-      // Put request to update workout data
+      // Put request to update workout data using the workout ID from the URL
       // Use the data passed into the function as the body of the put request
       const res = await fetch("/api/workouts/" + id, {
         method: "PUT",
