@@ -11,7 +11,7 @@ const WorkoutSchema = new Schema({
     required: true
   },
   exercises: {
-    type: Array,
+    type: Schema.Types.Mixed,
     required: true
   }
 });

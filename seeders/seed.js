@@ -1,11 +1,16 @@
+// Require in node modules
 let mongoose = require("mongoose");
+
+// Require in local modules
 let db = require("../models");
 
+// Connect to local workout Mongo database using mongoose
 mongoose.connect("mongodb://localhost/workout", {
   useNewUrlParser: true,
   useFindAndModify: false
 });
 
+// Define a variable containing seed data
 let workoutSeed = [
   {
     day: new Date().setDate(new Date().getDate()-10),
@@ -128,13 +133,24 @@ let workoutSeed = [
       {
         type: "resistance",
         name: "Bench",
-        duration: 30,
-        distance: 2
+        duration: 20,
+        weight: 150,
+        reps: 5,
+        sets: 5
+      },
+      {
+        type: "resistance",
+        name: "Deadlift",
+        duration: 25,
+        weight: 280,
+        reps: 5,
+        sets: 5
       }
     ]
   }
 ];
 
+// Use the workout mongoose model to delete all records, then populate with seed data
 db.Workout.deleteMany({})
   .then(() => db.Workout.collection.insertMany(workoutSeed))
   .then(data => {

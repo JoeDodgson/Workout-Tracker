@@ -4,7 +4,7 @@ const logger = require("morgan");
 const mongoose = require("mongoose");
 
 // Require in local modules
-const Models = require("/models/index.js");
+const Models = require("./models/workoutModel.js");
 
 // Define DB connection details
 const PORT = process.env.PORT || 3000;
@@ -19,7 +19,11 @@ app.use(express.json());
 app.use(express.static("public"));
 
 // Connect to mongoDB database using Mongoose
-mongoose.connect(process.env.MONGODB_URI || "mongodb://localhost/userdb", { useNewUrlParser: true });
+// Connect to local workout Mongo database using mongoose
+mongoose.connect(process.env.MONGODB_URI || "mongodb://localhost/workout", {
+  useNewUrlParser: true,
+  useFindAndModify: false
+});
 
 // Require in routes
 require('./routes/html-routes.js')(app);
