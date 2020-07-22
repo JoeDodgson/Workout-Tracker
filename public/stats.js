@@ -1,18 +1,19 @@
-// get all workout data from back-end
+// Get all workout data from back-end
+  
+const fetchStats = async () => {
+  try {
+    res = await API.getWorkoutsInRange();
+    populateChart(res);
 
-fetch("/api/workouts/range")
-  .then(response => {
-    return response.json();
-  })
-  .then(data => {
-    populateChart(data);
-  });
+  } catch (err) {
+    console.error(`ERROR - stats.js - fetchStats(): ${err}`);
+  }
+}
 
+fetchStats();
 
-API.getWorkoutsInRange()
-
-  function generatePalette() {
-    const arr = [
+function generatePalette() {
+  const arr = [
     "#003f5c",
     "#2f4b7c",
     "#665191",
@@ -32,7 +33,8 @@ API.getWorkoutsInRange()
   ]
 
   return arr;
-  }
+}
+
 function populateChart(data) {
   let durations = duration(data);
   let pounds = calculateTotalWeight(data);
