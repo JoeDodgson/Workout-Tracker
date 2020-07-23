@@ -49,21 +49,13 @@ function populateChart(data) {
   let lineChart = new Chart(line, {
     type: "line",
     data: {
-      labels: [
-        "Sunday",
-        "Monday",
-        "Tuesday",
-        "Wednesday",
-        "Thursday",
-        "Friday",
-        "Saturday"
-      ],
+      labels: durations.dates[0],
       datasets: [
         {
           label: "Workout Duration In Minutes",
           backgroundColor: "red",
           borderColor: "red",
-          data: durations,
+          data: durations.durations[0],
           fill: false
         }
       ]
@@ -84,6 +76,10 @@ function populateChart(data) {
         ],
         yAxes: [
           {
+            ticks: {
+              min: 0,
+              max: Math.max(...durations.durations[0])
+            },
             display: true,
             scaleLabel: {
               display: true
@@ -188,16 +184,25 @@ function populateChart(data) {
   });
 }
 
+// Populate duration line graph using the date and the duration
 function duration(data) {
-  let durations = [];
-
+  const dates = [];
+  const durations = [];
+  
   data.forEach(workout => {
+    const date = workout.day.substring(0, 10);
     workout.exercises.forEach(exercise => {
+      // const date = `${day.getDate()}-${(day.getMonth() + 1)}-${day.getFullYear()}`;
+      dates.push(date);
       durations.push(exercise.duration);
     });
   });
-
-  return durations;
+  
+  // Remove all but the last 7 workouts
+  const recentDurations = {};
+  recentDurations.dates = [dates.splice(dates.length - 7, 7)];
+  recentDurations.durations = [durations.splice(durations.length - 7, 7)];
+  return recentDurations;
 }
 
 function calculateTotalWeight(data) {
