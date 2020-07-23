@@ -65,7 +65,11 @@ const populateChart = data => {
     options: {
       responsive: true,
       title: {
-        display: true
+        display: true,
+        text: "Duration of Last 7 Workouts"
+      },
+      legend: {
+        display: false
       },
       scales: {
         xAxes: [
@@ -132,7 +136,10 @@ const populateChart = data => {
     options: {
       title: {
         display: true,
-        text: "Pounds Lifted"
+        text: "Pounds Lifted During Last 7 Workouts"
+      },
+      legend: {
+        display: false
       },
       scales: {
         yAxes: [
