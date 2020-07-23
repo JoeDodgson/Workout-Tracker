@@ -12,7 +12,7 @@ const fetchStats = async () => {
 
 fetchStats();
 
-function generatePalette() {
+const generatePalette = () => {
   const arr = [
     "#003f5c",
     "#2f4b7c",
@@ -35,7 +35,8 @@ function generatePalette() {
   return arr;
 }
 
-function populateChart(data) {
+// Populates all 4 charts in the stats dashboard with data retrieved from the database
+const populateChart = data => {
   let durations = duration(data);
   let pounds = calculateTotalWeight(data);
   let workouts = workoutNames(data);
@@ -46,13 +47,14 @@ function populateChart(data) {
   let pie = document.querySelector("#canvas3").getContext("2d");
   let pie2 = document.querySelector("#canvas4").getContext("2d");
 
+  // Creates a line chart for displaying exercise duration for past 7 exercises
   let lineChart = new Chart(line, {
     type: "line",
     data: {
       labels: durations.dates[0],
       datasets: [
         {
-          label: "Workout Duration In Minutes",
+          label: "Exercise Duration In Minutes",
           backgroundColor: "red",
           borderColor: "red",
           data: durations.durations[0],
@@ -90,6 +92,7 @@ function populateChart(data) {
     }
   });
 
+  // Creates a bar chart to display the total weight lifted over the last 7 exercises
   let barChart = new Chart(bar, {
     type: "bar",
     data: {
@@ -142,7 +145,8 @@ function populateChart(data) {
       }
     }
   });
-
+  
+  // Creates a pie chart to display the split of exercise performed over all time
   let pieChart = new Chart(pie, {
     type: "pie",
     data: {
@@ -162,7 +166,8 @@ function populateChart(data) {
       }
     }
   });
-
+  
+  // Creates a donut chart to display the split of exercise performed over all time
   let donutChart = new Chart(pie2, {
     type: "doughnut",
     data: {
@@ -185,14 +190,15 @@ function populateChart(data) {
 }
 
 // Populate duration line graph using the date and the duration
-function duration(data) {
+const duration = data => {
   const dates = [];
   const durations = [];
   
+  // Store the date and duration for each workout
   data.forEach(workout => {
+    // Take the date as the first 10 characters of the workout day, i.e. DD/MM/YYYY
     const date = workout.day.substring(0, 10);
     workout.exercises.forEach(exercise => {
-      // const date = `${day.getDate()}-${(day.getMonth() + 1)}-${day.getFullYear()}`;
       dates.push(date);
       durations.push(exercise.duration);
     });
@@ -205,7 +211,8 @@ function duration(data) {
   return recentDurations;
 }
 
-function calculateTotalWeight(data) {
+// Returns an array of total weight for each exercise
+const calculateTotalWeight = data => {
   let total = [];
 
   data.forEach(workout => {
@@ -217,7 +224,8 @@ function calculateTotalWeight(data) {
   return total;
 }
 
-function workoutNames(data) {
+// Returns an array of exercise names for all workouts
+const workoutNames = data => {
   let workouts = [];
 
   data.forEach(workout => {
