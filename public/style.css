@@ -19,8 +19,8 @@ body {
 nav {
   background-color: #5793fd;
   color: #ffffff;
-  height: 80px;
-  padding: 10px;
+  height: 75px;
+  padding: 10px 10px 10px 40px;
   line-height: 3;
   font-size: 1.2rem;
 }
@@ -311,6 +311,10 @@ button {
   display: none;
 }
 
+#continue-btn, #new-workout-btn {
+  align-self: flex-start;
+}
+
 .btn,
 button {
   display: block;
@@ -368,10 +372,6 @@ form > button {
   margin-bottom: 5px;
 }
 
-/* .workout .card {
-  width: 350px;
-} */
-
 .prev-workout button {
   margin: 10px;
 }
@@ -394,7 +394,7 @@ form > button {
 
 .prev-workout .buttons {
   display: flex;
-  height: 75px;
+  height: 50px;
   margin-top: 30px;
 }
 

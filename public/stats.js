@@ -12,7 +12,7 @@ const fetchStats = async () => {
 
 fetchStats();
 
-function generatePalette() {
+const generatePalette = () => {
   const arr = [
     "#003f5c",
     "#2f4b7c",
@@ -35,10 +35,10 @@ function generatePalette() {
   return arr;
 }
 
-function populateChart(data) {
-  let durations = duration(data);
-  let pounds = calculateTotalWeight(data);
-  let workouts = workoutNames(data);
+// Populates all 4 charts in the stats dashboard with data retrieved from the database
+const populateChart = data => {
+  let recentWorkouts = recentWorkoutData(data, 7);
+  let allWorkouts = allWorkoutData(data);
   const colors = generatePalette();
 
   let line = document.querySelector("#canvas").getContext("2d");
@@ -46,24 +46,17 @@ function populateChart(data) {
   let pie = document.querySelector("#canvas3").getContext("2d");
   let pie2 = document.querySelector("#canvas4").getContext("2d");
 
+  // Creates a line chart for displaying exercise duration for past 7 exercises
   let lineChart = new Chart(line, {
     type: "line",
     data: {
-      labels: [
-        "Sunday",
-        "Monday",
-        "Tuesday",
-        "Wednesday",
-        "Thursday",
-        "Friday",
-        "Saturday"
-      ],
+      labels: recentWorkouts.dates[0],
       datasets: [
         {
-          label: "Workout Duration In Minutes",
+          label: "Exercise Duration In Minutes",
           backgroundColor: "red",
           borderColor: "red",
-          data: durations,
+          data: recentWorkouts.durations[0],
           fill: false
         }
       ]
@@ -71,7 +64,11 @@ function populateChart(data) {
     options: {
       responsive: true,
       title: {
-        display: true
+        display: true,
+        text: "Duration of Last 7 Workouts"
+      },
+      legend: {
+        display: false
       },
       scales: {
         xAxes: [
@@ -84,6 +81,10 @@ function populateChart(data) {
         ],
         yAxes: [
           {
+            ticks: {
+              min: 0,
+              max: Math.max(...recentWorkouts.durations[0])
+            },
             display: true,
             scaleLabel: {
               display: true
@@ -94,22 +95,15 @@ function populateChart(data) {
     }
   });
 
+  // Creates a bar chart to display the total weight lifted over the last 7 exercises
   let barChart = new Chart(bar, {
     type: "bar",
     data: {
-      labels: [
-        "Sunday",
-        "Monday",
-        "Tuesday",
-        "Wednesday",
-        "Thursday",
-        "Friday",
-        "Saturday",
-      ],
+      labels: recentWorkouts.dates[0],
       datasets: [
         {
           label: "Pounds",
-          data: pounds,
+          data: recentWorkouts.totalWeight[0],
           backgroundColor: [
             "rgba(255, 99, 132, 0.2)",
             "rgba(54, 162, 235, 0.2)",
@@ -133,93 +127,136 @@ function populateChart(data) {
     options: {
       title: {
         display: true,
-        text: "Pounds Lifted"
+        text: "Pounds Lifted During Last 7 Workouts"
+      },
+      legend: {
+        display: false
       },
       scales: {
         yAxes: [
           {
             ticks: {
-              beginAtZero: true
+              min: 0,
+              max: Math.max(...recentWorkouts.totalWeight[0])
             }
           }
         ]
       }
     }
   });
-
+  
+  // Creates a pie chart to display the split of exercise performed over all time
   let pieChart = new Chart(pie, {
     type: "pie",
     data: {
-      labels: workouts,
+      labels: allWorkouts.distance.names,
       datasets: [
         {
           label: "Excercises Performed",
           backgroundColor: colors,
-          data: durations
+          data: allWorkouts.distance.totalDistance
         }
       ]
     },
     options: {
       title: {
         display: true,
-        text: "Excercises Performed"
+        text: "Total distance per exercise (all time)"
       }
     }
   });
-
+  
+  // Creates a donut chart to display the split of exercise performed over all time
   let donutChart = new Chart(pie2, {
     type: "doughnut",
     data: {
-      labels: workouts,
+      labels: allWorkouts.weight.names,
       datasets: [
         {
-          label: "Excercises Performed",
+          label: "Total weight per exercise (all time)",
           backgroundColor: colors,
-          data: pounds
+          data: allWorkouts.weight.totalWeight
         }
       ]
     },
     options: {
       title: {
         display: true,
-        text: "Excercises Performed"
+        text: "Total weight "
       }
     }
   });
 }
 
-function duration(data) {
-  let durations = [];
-
+// Populate duration line graph using the date and the duration
+const recentWorkoutData = (data, num) => {
+  const dates = [];
+  const durations = [];
+  const totalWeight = [];
+  
+  // Store the date and duration for each workout
   data.forEach(workout => {
+    // Take the date as the first 10 characters of the workout day, i.e. DD/MM/YYYY
+    const date = workout.day.substring(0, 10);
+    dates.push(date);
+    durations.push(0);
+    totalWeight.push(0);
     workout.exercises.forEach(exercise => {
-      durations.push(exercise.duration);
-    });
-  });
-
-  return durations;
-}
-
-function calculateTotalWeight(data) {
-  let total = [];
-
-  data.forEach(workout => {
-    workout.exercises.forEach(exercise => {
-      total.push(exercise.weight);
-    });
-  });
-
-  return total;
-}
-
-function workoutNames(data) {
-  let workouts = [];
-
-  data.forEach(workout => {
-    workout.exercises.forEach(exercise => {
-      workouts.push(exercise.name);
+      durations[durations.length - 1] += exercise.duration;
+      if (exercise.type === "resistance") {
+        totalWeight[totalWeight.length - 1] += exercise.weight;
+      }
     });
   });
   
-  return workouts;
+  // Populate a 'recentWorkouts' object with the 'num' most recent workout dates and durations
+  const recentWorkouts = {};
+  if (dates.length > num) {
+    recentWorkouts.dates = [dates.splice(dates.length - num, num)];
+    recentWorkouts.durations = [durations.splice(durations.length - num, num)];
+    recentWorkouts.totalWeight = [totalWeight.splice(totalWeight.length - num, num)];
+  } else {
+    recentWorkouts = { dates , durations , totalWeight };
+  }
+  return recentWorkouts;
+}
+
+// Returns an array of total weight for each exercise
+const allWorkoutData = data => {
+  const exerciseObj = {
+    weight: {
+      names: [],
+      totalWeight: []
+    },
+    distance: {
+      names: [],
+      totalDistance: []
+    }
+  };
+
+  data.forEach(workout => {
+    workout.exercises.forEach(exercise => {
+      if (exercise.type === "resistance") {
+        const exerciseIndex = exerciseObj.weight.names.indexOf(exercise.name);
+        if ( exerciseIndex === -1) {
+          exerciseObj.weight.names.push(exercise.name);
+          exerciseObj.weight.totalWeight.push(exercise.weight);
+        }
+        else {
+          exerciseObj.weight.totalWeight[exerciseIndex] += exercise.weight;
+        }
+      } else if (exercise.type === "cardio") {
+        const exerciseIndex = exerciseObj.distance.names.indexOf(exercise.name);
+        if ( exerciseIndex === -1) {
+          exerciseObj.distance.names.push(exercise.name);
+          exerciseObj.distance.totalDistance.push(exercise.distance);
+        }
+        else {
+          exerciseObj.distance.totalDistance[exerciseIndex] += exercise.distance;
+        }
+      }
+    });
+  });
+
+  return exerciseObj;
 }
