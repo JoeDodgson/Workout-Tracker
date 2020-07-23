@@ -38,8 +38,7 @@ const generatePalette = () => {
 // Populates all 4 charts in the stats dashboard with data retrieved from the database
 const populateChart = data => {
   let recentWorkouts = recentWorkoutData(data, 7);
-  let pounds = calculateTotalWeight(data);
-  let workouts = workoutNames(data);
+  let allWorkouts = allWorkoutData(data);
   const colors = generatePalette();
 
   let line = document.querySelector("#canvas").getContext("2d");
@@ -150,19 +149,19 @@ const populateChart = data => {
   let pieChart = new Chart(pie, {
     type: "pie",
     data: {
-      labels: workouts,
+      labels: allWorkouts.distance.names,
       datasets: [
         {
           label: "Excercises Performed",
           backgroundColor: colors,
-          data: recentWorkouts
+          data: allWorkouts.distance.totalDistance
         }
       ]
     },
     options: {
       title: {
         display: true,
-        text: "Excercises Performed"
+        text: "Total distance per exercise (all time)"
       }
     }
   });
@@ -171,19 +170,19 @@ const populateChart = data => {
   let donutChart = new Chart(pie2, {
     type: "doughnut",
     data: {
-      labels: workouts,
+      labels: allWorkouts.weight.names,
       datasets: [
         {
-          label: "Excercises Performed",
+          label: "Total weight per exercise (all time)",
           backgroundColor: colors,
-          data: pounds
+          data: allWorkouts.weight.totalWeight
         }
       ]
     },
     options: {
       title: {
         display: true,
-        text: "Excercises Performed"
+        text: "Total weight "
       }
     }
   });
@@ -223,27 +222,41 @@ const recentWorkoutData = (data, num) => {
 }
 
 // Returns an array of total weight for each exercise
-const calculateTotalWeight = data => {
-  let total = [];
+const allWorkoutData = data => {
+  const exerciseObj = {
+    weight: {
+      names: [],
+      totalWeight: []
+    },
+    distance: {
+      names: [],
+      totalDistance: []
+    }
+  };
 
   data.forEach(workout => {
     workout.exercises.forEach(exercise => {
-      total.push(exercise.weight);
+      if (exercise.type === "resistance") {
+        const exerciseIndex = exerciseObj.weight.names.indexOf(exercise.name);
+        if ( exerciseIndex === -1) {
+          exerciseObj.weight.names.push(exercise.name);
+          exerciseObj.weight.totalWeight.push(exercise.weight);
+        }
+        else {
+          exerciseObj.weight.totalWeight[exerciseIndex] += exercise.weight;
+        }
+      } else if (exercise.type === "cardio") {
+        const exerciseIndex = exerciseObj.distance.names.indexOf(exercise.name);
+        if ( exerciseIndex === -1) {
+          exerciseObj.distance.names.push(exercise.name);
+          exerciseObj.distance.totalDistance.push(exercise.distance);
+        }
+        else {
+          exerciseObj.distance.totalDistance[exerciseIndex] += exercise.distance;
+        }
+      }
     });
   });
 
-  return total;
-}
-
-// Returns an array of exercise names for all workouts
-const workoutNames = data => {
-  let workouts = [];
-
-  data.forEach(workout => {
-    workout.exercises.forEach(exercise => {
-      workouts.push(exercise.name);
-    });
-  });
-  
-  return workouts;
+  return exerciseObj;
 }
