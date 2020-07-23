@@ -37,7 +37,7 @@ const generatePalette = () => {
 
 // Populates all 4 charts in the stats dashboard with data retrieved from the database
 const populateChart = data => {
-  let durations = duration(data);
+  let recentWorkouts = recentWorkoutData(data, 7);
   let pounds = calculateTotalWeight(data);
   let workouts = workoutNames(data);
   const colors = generatePalette();
@@ -51,13 +51,13 @@ const populateChart = data => {
   let lineChart = new Chart(line, {
     type: "line",
     data: {
-      labels: durations.dates[0],
+      labels: recentWorkouts.dates[0],
       datasets: [
         {
           label: "Exercise Duration In Minutes",
           backgroundColor: "red",
           borderColor: "red",
-          data: durations.durations[0],
+          data: recentWorkouts.durations[0],
           fill: false
         }
       ]
@@ -84,7 +84,7 @@ const populateChart = data => {
           {
             ticks: {
               min: 0,
-              max: Math.max(...durations.durations[0])
+              max: Math.max(...recentWorkouts.durations[0])
             },
             display: true,
             scaleLabel: {
@@ -100,19 +100,11 @@ const populateChart = data => {
   let barChart = new Chart(bar, {
     type: "bar",
     data: {
-      labels: [
-        "Sunday",
-        "Monday",
-        "Tuesday",
-        "Wednesday",
-        "Thursday",
-        "Friday",
-        "Saturday",
-      ],
+      labels: recentWorkouts.dates[0],
       datasets: [
         {
           label: "Pounds",
-          data: pounds,
+          data: recentWorkouts.totalWeight[0],
           backgroundColor: [
             "rgba(255, 99, 132, 0.2)",
             "rgba(54, 162, 235, 0.2)",
@@ -145,7 +137,8 @@ const populateChart = data => {
         yAxes: [
           {
             ticks: {
-              beginAtZero: true
+              min: 0,
+              max: Math.max(...recentWorkouts.totalWeight[0])
             }
           }
         ]
@@ -162,7 +155,7 @@ const populateChart = data => {
         {
           label: "Excercises Performed",
           backgroundColor: colors,
-          data: durations
+          data: recentWorkouts
         }
       ]
     },
@@ -197,25 +190,36 @@ const populateChart = data => {
 }
 
 // Populate duration line graph using the date and the duration
-const duration = data => {
+const recentWorkoutData = (data, num) => {
   const dates = [];
   const durations = [];
+  const totalWeight = [];
   
   // Store the date and duration for each workout
   data.forEach(workout => {
     // Take the date as the first 10 characters of the workout day, i.e. DD/MM/YYYY
     const date = workout.day.substring(0, 10);
+    dates.push(date);
+    durations.push(0);
+    totalWeight.push(0);
     workout.exercises.forEach(exercise => {
-      dates.push(date);
-      durations.push(exercise.duration);
+      durations[durations.length - 1] += exercise.duration;
+      if (exercise.type === "resistance") {
+        totalWeight[totalWeight.length - 1] += exercise.weight;
+      }
     });
   });
   
-  // Remove all but the last 7 workouts
-  const recentDurations = {};
-  recentDurations.dates = [dates.splice(dates.length - 7, 7)];
-  recentDurations.durations = [durations.splice(durations.length - 7, 7)];
-  return recentDurations;
+  // Populate a 'recentWorkouts' object with the 'num' most recent workout dates and durations
+  const recentWorkouts = {};
+  if (dates.length > num) {
+    recentWorkouts.dates = [dates.splice(dates.length - num, num)];
+    recentWorkouts.durations = [durations.splice(durations.length - num, num)];
+    recentWorkouts.totalWeight = [totalWeight.splice(totalWeight.length - num, num)];
+  } else {
+    recentWorkouts = { dates , durations , totalWeight };
+  }
+  return recentWorkouts;
 }
 
 // Returns an array of total weight for each exercise
