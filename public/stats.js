@@ -1,3 +1,6 @@
+// Declare variables
+const titleFontSize = 18;
+
 // Get all workout data from back-end
   
 const fetchStats = async () => {
@@ -65,6 +68,7 @@ const populateChart = data => {
       responsive: true,
       title: {
         display: true,
+        fontSize: titleFontSize,
         text: "Duration of Last 7 Workouts"
       },
       legend: {
@@ -75,7 +79,8 @@ const populateChart = data => {
           {
             display: true,
             scaleLabel: {
-              display: true
+              display: true,
+              labelString: "Date of workout"
             }
           }
         ],
@@ -87,7 +92,8 @@ const populateChart = data => {
             },
             display: true,
             scaleLabel: {
-              display: true
+              display: true,
+              labelString: "Duration (minutes)"
             }
           }
         ]
@@ -102,7 +108,7 @@ const populateChart = data => {
       labels: recentWorkouts.dates[0],
       datasets: [
         {
-          label: "Pounds",
+          label: "Kilograms",
           data: recentWorkouts.totalWeight[0],
           backgroundColor: [
             "rgba(255, 99, 132, 0.2)",
@@ -127,17 +133,31 @@ const populateChart = data => {
     options: {
       title: {
         display: true,
-        text: "Pounds Lifted During Last 7 Workouts"
+        fontSize: titleFontSize,
+        text: "Total Weight Lifted During Last 7 Workouts"
       },
       legend: {
         display: false
       },
       scales: {
+        xAxes: [
+          {
+            scaleLabel: {
+              display: true,
+              labelString: "Date of workout"
+            }
+          }
+        ],
         yAxes: [
           {
             ticks: {
               min: 0,
-              max: Math.max(...recentWorkouts.totalWeight[0])
+              max: Math.max(...recentWorkouts.totalWeight[0]),
+              callback: (value, index, values) =>  `${value} kg`
+            },
+            scaleLabel: {
+              display: true,
+              labelString: "Total weight lifted in workout"
             }
           }
         ]
@@ -161,6 +181,7 @@ const populateChart = data => {
     options: {
       title: {
         display: true,
+        fontSize: titleFontSize,
         text: "Total distance per exercise (all time)"
       }
     }
@@ -182,6 +203,7 @@ const populateChart = data => {
     options: {
       title: {
         display: true,
+        fontSize: titleFontSize,
         text: "Total weight "
       }
     }
