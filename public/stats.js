@@ -53,13 +53,13 @@ const populateChart = data => {
   let lineChart = new Chart(line, {
     type: "line",
     data: {
-      labels: recentWorkouts.dates[0],
+      labels: recentWorkouts.dates,
       datasets: [
         {
           label: "Exercise Duration In Minutes",
           backgroundColor: "red",
           borderColor: "red",
-          data: recentWorkouts.durations[0],
+          data: recentWorkouts.durations,
           fill: false
         }
       ]
@@ -88,7 +88,7 @@ const populateChart = data => {
           {
             ticks: {
               min: 0,
-              max: Math.max(...recentWorkouts.durations[0])
+              max: Math.max(...recentWorkouts.durations)
             },
             display: true,
             scaleLabel: {
@@ -101,15 +101,16 @@ const populateChart = data => {
     }
   });
 
+  console.log(recentWorkouts);
   // Creates a bar chart to display the total weight lifted over the last 7 exercises
   let barChart = new Chart(bar, {
     type: "bar",
     data: {
-      labels: recentWorkouts.dates[0],
+      labels: recentWorkouts.dates,
       datasets: [
         {
           label: "Kilograms",
-          data: recentWorkouts.totalWeight[0],
+          data: recentWorkouts.totalWeight,
           backgroundColor: [
             "rgba(255, 99, 132, 0.2)",
             "rgba(54, 162, 235, 0.2)",
@@ -152,7 +153,7 @@ const populateChart = data => {
           {
             ticks: {
               min: 0,
-              max: Math.max(...recentWorkouts.totalWeight[0]),
+              max: Math.max(...recentWorkouts.totalWeight),
               callback: (value, index, values) =>  `${value} kg`
             },
             scaleLabel: {
@@ -187,7 +188,7 @@ const populateChart = data => {
     }
   });
   
-  // Creates a donut chart to display the split of exercise performed over all time
+  // // Creates a donut chart to display the split of exercise performed over all time
   let donutChart = new Chart(pie2, {
     type: "doughnut",
     data: {
@@ -232,7 +233,7 @@ const recentWorkoutData = (data, num) => {
   });
   
   // Populate a 'recentWorkouts' object with the 'num' most recent workout dates and durations
-  const recentWorkouts = {};
+  let recentWorkouts = {};
   if (dates.length > num) {
     recentWorkouts.dates = [dates.splice(dates.length - num, num)];
     recentWorkouts.durations = [durations.splice(durations.length - num, num)];
