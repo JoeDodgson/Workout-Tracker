@@ -35,7 +35,7 @@ function tallyExercises(exercises) {
 
   // Suffix the totals with units
   if (tallied.totalDuration) tallied.totalDuration += " mins";
-  if (tallied.totalWeight) tallied.totalWeight += " lbs";
+  if (tallied.totalWeight) tallied.totalWeight += " kg";
   if (tallied.totalDistance) tallied.totalDistance += " mi";
   return tallied;
 }
