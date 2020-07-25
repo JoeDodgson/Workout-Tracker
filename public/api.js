@@ -34,13 +34,12 @@ const API = {
     }
     
   },
-  async createWorkout(data = {}) {
+  
+  // Send a post request to create a new workout with no exercise data
+  async createWorkout() {
     try {
-      // Post request to send new workout data
-      // Use the data passed into the function as the body of the put request
       const res = await fetch("/api/workouts", {
         method: "POST",
-        body: JSON.stringify(data),
         headers: { "Content-Type": "application/json" }
       });
       
