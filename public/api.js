@@ -7,17 +7,24 @@ const API = {
       
       // Read the response and return the final workout
       const json = await res.json();
-      return json[json.length - 1];
+      const finalWorkout = json[json.length - 1];
+
+      // If no exercises in the final workout, return false
+      if (finalWorkout.exercises.length === 0) {
+        return false;
+      } 
+      return finalWorkout;
       
     } catch (err) {
       console.log(`ERROR - api.js - getLastWorkout(): ${err}`)
     }
   },
+
+  // Sends a put request to insert exercise data into a workout using the workout ID from the URL
   async addExercise(data) {
     // Store the workout ID from the URL
     const id = location.search.split("=")[1];
     try {
-      // Put request to update workout data using the workout ID from the URL
       // Use the data passed into the function as the body of the put request
       const res = await fetch("/api/workouts/" + id, {
         method: "PUT",
@@ -34,7 +41,7 @@ const API = {
     }
     
   },
-  
+
   // Send a post request to create a new workout with no exercise data
   async createWorkout() {
     try {
