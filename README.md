@@ -22,6 +22,10 @@
 A local node.js web application which stores workout data in a local mongoDB database. Users can create a new workout, add exercises to a workout and view workout statistics.
 
 ## Installation
+Access the deployed site at https://jjd-workout-tracker.herokuapp.com/
+
+Alternatively, if you want to run the application locally, follow these steps:
+
 1. Download the code repository
 
 2. Open your terminal, type the following command and hit enter:
@@ -41,7 +45,7 @@ If this does not run, you will need to install mongoDB by following these [instr
 `npm run seed`
 
 ## Usage
-To run the application, open your terminal and navigate to the downloaded repository in the terminal. Then type the following command and hit enter:
+To run the application locally, open your terminal and navigate to the downloaded repository in the terminal. Then type the following command and hit enter:
 
 `node run start`
 
