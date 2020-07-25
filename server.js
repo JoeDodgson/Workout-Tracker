@@ -2,6 +2,10 @@
 const express = require("express");
 const logger = require("morgan");
 const mongoose = require("mongoose");
+const dotenv = require("dotenv");
+
+// Configure dotenv
+dotenv.config();
 
 // Require in local modules
 const Models = require("./models/workoutModel.js");
