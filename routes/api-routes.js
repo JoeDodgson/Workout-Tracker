@@ -8,11 +8,10 @@ module.exports = (app) => {
             // Perform a find all query on the database
             const workouts = await db.Workout.find({});
             
-            // If no workouts are returned, throw a 404 error
-            if (workouts.length === 0) throw new Error('404: No workouts found');
+            // If no workouts are returned, return false
+            if (workouts.length === 0) return res.json(workouts);
+            else return res.json(workouts);
             
-            // Return the workouts to the user
-            return res.json(workouts);
         } catch (err) {
             console.error(`ERROR - api-routes.js - .get('/api/workouts'): ${err}`);
         }

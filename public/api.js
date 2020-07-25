@@ -2,18 +2,21 @@ const API = {
   async getLastWorkout() {
     let res;
     try {
-      // Get request to retrieve workouts data
+      // Send a get request to retrieve workouts data
       res = await fetch("/api/workouts");
       
-      // Read the response and return the final workout
+      // Read the response and return the last workout
       const json = await res.json();
-      const finalWorkout = json[json.length - 1];
 
-      // If no exercises in the final workout, return false
-      if (finalWorkout.exercises.length === 0) {
-        return false;
-      } 
-      return finalWorkout;
+      // If workouts get request response returns nothing, return false
+      if (json.length === 0) return false;
+      
+      const lastWorkout = json[json.length - 1];
+
+      // If no exercises in the last workout, return false
+      if (lastWorkout.exercises.length === 0) return false;
+      
+      return lastWorkout;
       
     } catch (err) {
       console.log(`ERROR - api.js - getLastWorkout(): ${err}`)
