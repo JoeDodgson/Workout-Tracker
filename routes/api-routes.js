@@ -8,11 +8,10 @@ module.exports = (app) => {
             // Perform a find all query on the database
             const workouts = await db.Workout.find({});
             
-            // If no workouts are returned, throw a 404 error
-            if (workouts.length === 0) throw new Error('404: No workouts found');
+            // If no workouts are returned, return false
+            if (workouts.length === 0) return res.json(workouts);
+            else return res.json(workouts);
             
-            // Return the workouts to the user
-            return res.json(workouts);
         } catch (err) {
             console.error(`ERROR - api-routes.js - .get('/api/workouts'): ${err}`);
         }
@@ -65,38 +64,15 @@ module.exports = (app) => {
         }
     });
 
+    // Creates a new workout with no exercise data inside
     app.post('/api/workouts/', async (req, res) => {
         try {
-            // Store the data type sent in the request
-            const { type } = req.body;
-            
             // Create a new workout document using the mongoose model
             const newWorkout = new db.Workout({
                 day: new Date(),
                 exercises: []
             });
             
-            // Store the data sent in the request body and feed into the newWorkout
-            if (type === "resistance") {
-                const { name, duration, weight, reps, sets } = req.body;
-                newWorkout.exercises = [{
-                    type,
-                    name,
-                    duration,
-                    weight,
-                    reps,
-                    sets
-                }];
-            } else if (type === "cardio") {
-                const { name, distance, duration } = req.body;
-                newWorkout.exercises = [{
-                    type,
-                    name,
-                    distance,
-                    duration
-                }];
-            }
-
             // Save the new workout to the database
             const addedWorkout = await newWorkout.save();
 

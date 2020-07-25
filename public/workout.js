@@ -82,7 +82,7 @@ function renderNoWorkoutText() {
   const container = document.querySelector(".workout-stats");
   const p = document.createElement("p");
   const strong = document.createElement("strong");
-  strong.textContent = "You have not created a workout yet!"
+  strong.textContent = "You have not registered any exercise to a workout yet!"
 
   p.appendChild(strong);
   container.appendChild(p);
